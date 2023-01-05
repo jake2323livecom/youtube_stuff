@@ -8,7 +8,7 @@ import os
 ROOT_DIR = 'C:\\users\\jake2\\youtube_videos'
 
 # List of playlist URLs and option number of videos from each that you'd like to download.
-PLAYLIST_URLS = [
+PLAYLISTS = [
     {'url': 'https://youtube.com/playlist?list=PL4cUxeGkcC9hk02lFb6EkdXF2DYGl4Gg4', 'download_first': 3},
     {'url': 'https://youtube.com/playlist?list=PL4cUxeGkcC9gC88BEo9czgyS72A3doDeM'}
 ]
@@ -38,25 +38,27 @@ for video_url in SINGLE_VIDEO_URLS:
     
     if filename in os.listdir(SINGLE_VIDEO_DIR):
         print(f'The video {video_pointer.title} has already been downloaded and will be skipped.')
-    else:
-        video = video_pointer.streams.get_highest_resolution()
-        print(f'Downloading {video.title}...')
-        video.download(SINGLE_VIDEO_DIR, filename=filename)
-        print('Done')
+        continue
+
+    video = video_pointer.streams.get_highest_resolution()
+    print(f'Downloading {video.title}...')
+    video.download(SINGLE_VIDEO_DIR, filename=filename)
+    print('Done')
 
 # Download appropriate number of videos from each playlist
-for playlist in PLAYLIST_URLS:
+for playlist in PLAYLISTS:
+
     playlist_obj = Playlist(playlist['url'])
+
     playlist_path = os.path.join(PLAYLIST_DIR, slugify(playlist_obj.title))
     if not os.path.exists(playlist_path):
         os.mkdir(playlist_path)
 
-    download_limit = playlist['download_first'] if playlist.get('download_first') else len(playlist_obj.videos)
+    download_limit = playlist.get('download_first')
+    video_pointers = list(playlist_obj.videos)[:download_limit]
 
-    for index in range(download_limit):
-        video_pointer = playlist_obj.videos[index]
+    for video_pointer in video_pointers:
         filename = slugify(video_pointer.title) + '.mp4'
-
         if filename in os.listdir(playlist_path):
             print(f'The video {video_pointer.title} has already been downloaded and will be skipped.')
             continue
