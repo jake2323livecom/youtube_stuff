@@ -2,21 +2,31 @@ from pytube import YouTube, Playlist
 from django.utils.text import slugify
 import os
 
+################## EDIT THESE SETTINGS ###################################################################
+
+# Root directory where all videos will go.
 ROOT_DIR = 'C:\\users\\jake2\\youtube_videos'
+
+# List of playlist URLs and option number of videos from each that you'd like to download.
 PLAYLIST_URLS = [
     {'url': 'https://youtube.com/playlist?list=PL4cUxeGkcC9hk02lFb6EkdXF2DYGl4Gg4', 'download_first': 3},
     {'url': 'https://youtube.com/playlist?list=PL4cUxeGkcC9gC88BEo9czgyS72A3doDeM'}
 ]
+
+# List of singular video URLs
 SINGLE_VIDEO_URLS = [
     'https://youtu.be/ZES3nJQYJok',
     'https://youtu.be/itRLRfuL_PQ'
 ]
+#########################################################################################################
 
 
-# Make sure all intended directories exist
+###################### SHOULDN'T HAVE TO EDIT THESE, BUT YOU CAN ########################################
 PLAYLIST_DIR = os.path.join(ROOT_DIR, 'playlists')
 SINGLE_VIDEO_DIR = os.path.join(ROOT_DIR, 'single_videos')
+#########################################################################################################
 
+# Make sure every directory exists
 for directory in [ROOT_DIR, PLAYLIST_DIR, SINGLE_VIDEO_DIR]:
     if not os.path.exists(directory):
         os.mkdir(directory)
