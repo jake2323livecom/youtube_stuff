@@ -26,49 +26,51 @@ PLAYLIST_DIR = os.path.join(ROOT_DIR, 'playlists')
 SINGLE_VIDEO_DIR = os.path.join(ROOT_DIR, 'single_videos')
 #########################################################################################################
 
-# Make sure every directory exists
-for directory in [ROOT_DIR, PLAYLIST_DIR, SINGLE_VIDEO_DIR]:
-    if not os.path.exists(directory):
-        os.mkdir(directory)
-
-# Download every single video if it isn't already downloaded
-for video_url in SINGLE_VIDEO_URLS:
-    video_pointer = YouTube(video_url)
-    filename = slugify(video_pointer.title) + '.mp4'
+if __name__ == '__main__':
     
-    if filename in os.listdir(SINGLE_VIDEO_DIR):
-        print(f'The video {video_pointer.title} has already been downloaded and will be skipped.')
-        continue
+    # Make sure every directory exists
+    for directory in [ROOT_DIR, PLAYLIST_DIR, SINGLE_VIDEO_DIR]:
+        if not os.path.exists(directory):
+            os.mkdir(directory)
 
-    video = video_pointer.streams.get_highest_resolution()
-    print(f'Downloading {video.title}...')
-    video.download(SINGLE_VIDEO_DIR, filename=filename)
-    print('Done')
-
-# Download appropriate number of videos from each playlist
-for playlist in PLAYLISTS:
-
-    playlist_obj = Playlist(playlist['url'])
-
-    playlist_path = os.path.join(PLAYLIST_DIR, slugify(playlist_obj.title))
-    if not os.path.exists(playlist_path):
-        os.mkdir(playlist_path)
-
-    download_limit = playlist.get('download_first')
-    video_pointers = list(playlist_obj.videos)[:download_limit]
-
-    for video_pointer in video_pointers:
+    # Download every single video if it isn't already downloaded
+    for video_url in SINGLE_VIDEO_URLS:
+        video_pointer = YouTube(video_url)
         filename = slugify(video_pointer.title) + '.mp4'
-        if filename in os.listdir(playlist_path):
+        
+        if filename in os.listdir(SINGLE_VIDEO_DIR):
             print(f'The video {video_pointer.title} has already been downloaded and will be skipped.')
             continue
 
         video = video_pointer.streams.get_highest_resolution()
         print(f'Downloading {video.title}...')
-        video.download(playlist_path, filename=filename)
-        print('Done.')
+        video.download(SINGLE_VIDEO_DIR, filename=filename)
+        print('Done')
 
-print('Have a nice day, fuck face.')
+    # Download appropriate number of videos from each playlist
+    for playlist in PLAYLISTS:
+
+        playlist_obj = Playlist(playlist['url'])
+
+        playlist_path = os.path.join(PLAYLIST_DIR, slugify(playlist_obj.title))
+        if not os.path.exists(playlist_path):
+            os.mkdir(playlist_path)
+
+        download_limit = playlist.get('download_first')
+        video_pointers = list(playlist_obj.videos)[:download_limit]
+
+        for video_pointer in video_pointers:
+            filename = slugify(video_pointer.title) + '.mp4'
+            if filename in os.listdir(playlist_path):
+                print(f'The video {video_pointer.title} has already been downloaded and will be skipped.')
+                continue
+
+            video = video_pointer.streams.get_highest_resolution()
+            print(f'Downloading {video.title}...')
+            video.download(playlist_path, filename=filename)
+            print('Done.')
+
+    print('Have a nice day, fuck face.')
 
 
 
